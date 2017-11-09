@@ -31,5 +31,6 @@
     <None Include="..\README.md" />
     <None Include="..\.gitattributes" />
     <None Include="..\.gitignore" />
+    <None Include="..\LICENSE" />
   </ItemGroup>
 </Project>
