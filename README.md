@@ -1,0 +1,3 @@
+# stringwrapper: A simple quote- and escape-sensitive substring finder.
+
+Documentation coming later...
