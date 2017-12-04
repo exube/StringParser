@@ -54,6 +54,10 @@ class stringwrapper {
 
     void reset();
 
+    // Split our string by whitespace, but putting the special strings in their own element.
+    // Also parses by escapes and quotes.
+    std::vector<std::string> split_by_whitespace(const std::vector<std::string> const &special_characters) const;
+
 
 
 };

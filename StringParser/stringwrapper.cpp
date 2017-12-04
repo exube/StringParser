@@ -54,3 +54,35 @@ size_t stringwrapper::find(std::string str, size_t pos) {
 void stringwrapper::reset() {
     this->last_found = this->data.end();
 }
+
+signed char convert_character(char c) { 
+    switch(c) { 
+    case 'n': 
+        return '\n';
+    case 't': 
+        return '\t';
+    case 'v':
+        return '\v';
+    case 'b':
+        return '\b';
+    case 'r':
+        return '\r';
+    case 'f':
+        return '\f';
+    case 'a':
+        return '\a';
+    case '\\': case '?': case '\'': case '"': case 0:
+        return c;
+    default:
+        return -1;
+
+    }
+}
+
+std::vector<std::string> stringwrapper::split_by_whitespace(const std::vector<std::string> &special_characters) const {
+    std::vector<std::string> result;
+
+    for (size_t i = 0; i < this->data.size(); i++) {
+        
+    }
+}
