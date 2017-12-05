@@ -46,10 +46,18 @@ class stringwrapper {
     // Find the quotes and store their locations
     void find_quote();
 
-    public:
-    stringwrapper(std::string& data, const std::string& quote = "\"", const std::string& escape = "\\");
+    void register_quotes();
 
+    public:
+    stringwrapper(std::string& data, const std::string& quote = "\"'", const std::string& escape = "\\");
+
+    // Find the first occurrence of str starting from the end of the string (or at pos)
+    // and searches backwards. Returns a position from the start of the string.
+    // Does not search inside quote strings indicated in the constructor.  
     size_t rfind(std::string str, size_t pos = std::string::npos);
+
+    // Find the first occurrence of str starting from the beginning of the string, or from pos
+    // searches forward.  Returns a position from the start of the string.
     size_t find(std::string str, size_t pos = 0);
 
     void reset();

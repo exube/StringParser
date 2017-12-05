@@ -14,7 +14,7 @@
  *                                                                                  *
  * The above copyright notice and this permission notice shall be included in all   *
  * copies or substantial portions of the Software.                                  *
- *                                                                                  * 
+ *                                                                                  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR       *
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,         *
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE       *
@@ -25,6 +25,8 @@
  ************************************************************************************/
 
 #include "stringwrapper.h"
+
+#define CTYPE(c) ((c == '"') ? 1 : ((c == '\'') ? 2 : ((c == '\\') ? -1 : 0)))
 
 void stringwrapper::find_quote() {
     size_t quote_sz = this->quote.size();
@@ -38,6 +40,14 @@ void stringwrapper::find_quote() {
 
 }
 
+void stringwrapper::register_quotes() {
+    // charmode < 0: escape; charmode > 0: quote; charmode = 0: regular
+    int charmode = 0;
+    for (size_t i = 0; i < this->data.size(); i++) {
+        if (charmode == 0) charmode = CTYPE(this->data[i]);
+    }
+}
+
 stringwrapper::stringwrapper(std::string& d, const std::string& q, const std::string& esc) : data(d), escape(esc), quote(q) {
     this->reset();
     this->find_quote();
@@ -47,7 +57,9 @@ size_t stringwrapper::rfind(std::string str, size_t pos) {
     return size_t();
 }
 
+
 size_t stringwrapper::find(std::string str, size_t pos) {
+
     return size_t();
 }
 
