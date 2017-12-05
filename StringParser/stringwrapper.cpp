@@ -69,32 +69,39 @@ void stringwrapper::reset() {
 
 signed char convert_character(char c) { 
     switch(c) { 
-    case 'n': 
-        return '\n';
-    case 't': 
-        return '\t';
-    case 'v':
-        return '\v';
-    case 'b':
-        return '\b';
-    case 'r':
-        return '\r';
-    case 'f':
-        return '\f';
-    case 'a':
-        return '\a';
-    case '\\': case '?': case '\'': case '"': case 0:
-        return c;
-    default:
-        return -1;
+        case 'n':
+            return '\n';
+        case 't':
+            return '\t';
+        case 'v':
+            return '\v';
+        case 'b':
+            return '\b';
+        case 'r':
+            return '\r';
+        case 'f':
+            return '\f';
+        case 'a':
+            return '\a';
+        case '\\': case '?': case '\'': case '"': case 0:
+            return c;
+        default:
+            return c;
 
     }
 }
+signed char parse_escape_sequence(char c) {
+    return c;
+}
 
 std::vector<std::string> stringwrapper::split_by_whitespace(const std::vector<std::string> &special_characters) const {
+    enum { Q_NONE, Q_DOUBLE, Q_SINGLE, Q_BACK };
+    const char* specials = "\"'\\";
+
     std::vector<std::string> result;
 
     for (size_t i = 0; i < this->data.size(); i++) {
+        std::string cur_word;
+        // Special characters: "'\ 
         
-    }
 }
