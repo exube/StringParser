@@ -64,7 +64,9 @@ class stringwrapper {
 
     // Split our string by whitespace, but putting the special strings in their own element.
     // Also parses by escapes and quotes.
-    std::vector<std::string> split_by_whitespace(const std::vector<std::string> const &special_characters) const;
+
+    // special_characters contains extra delimiters in decreasing priority.
+    std::vector<std::string> split_by_whitespace(const std::vector<std::string> &special_characters) const;
 
 
 

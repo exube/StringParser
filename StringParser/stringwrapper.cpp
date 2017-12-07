@@ -26,6 +26,8 @@
 
 #include "stringwrapper.h"
 
+#include <algorithm>
+#include <utility>
 #define CTYPE(c) ((c == '"') ? 1 : ((c == '\'') ? 2 : ((c == '\\') ? -1 : 0)))
 
 void stringwrapper::find_quote() {
@@ -67,41 +69,137 @@ void stringwrapper::reset() {
     this->last_found = this->data.end();
 }
 
-signed char convert_character(char c) { 
-    switch(c) { 
+signed char convert_character(char c) {
+    switch (c) {
         case 'n':
-            return '\n';
+        return '\n';
+
         case 't':
-            return '\t';
+        return '\t';
+
         case 'v':
-            return '\v';
+        return '\v';
+
         case 'b':
-            return '\b';
+        return '\b';
+
         case 'r':
-            return '\r';
+        return '\r';
+
         case 'f':
-            return '\f';
+        return '\f';
+
         case 'a':
-            return '\a';
+        return '\a';
+
         case '\\': case '?': case '\'': case '"': case 0:
-            return c;
+        return c;
+
         default:
-            return c;
+        return c;
 
     }
 }
+
 signed char parse_escape_sequence(char c) {
     return c;
 }
 
 std::vector<std::string> stringwrapper::split_by_whitespace(const std::vector<std::string> &special_characters) const {
-    enum { Q_NONE, Q_DOUBLE, Q_SINGLE, Q_BACK };
+    enum { Q_NONE, Q_DOUBLE, Q_SINGLE };
     const char* specials = "\"'\\";
 
     std::vector<std::string> result;
+    int quote_mode = Q_NONE;
+    std::string cur_word;
 
-    for (size_t i = 0; i < this->data.size(); i++) {
-        std::string cur_word;
+    for (size_t pos = 0; pos < this->data.size(); pos++) {
         // Special characters: "'\ 
-        
+        switch (quote_mode) {
+            case Q_NONE:  // We are not in any quotes; do not parse most escapes literally
+            switch (this->data[pos]) {
+                case ' ':
+                if (!cur_word.empty()) {
+                    result.push_back(std::move(cur_word));
+                    cur_word.clear();
+                }
+                break; // switch(this->data[pos])
+
+                case '"':
+                quote_mode = Q_DOUBLE;
+                break; // switch(this->data[pos])
+
+                case '\'':
+                quote_mode = Q_SINGLE;
+                break; // switch(this->data[pos])
+
+                case '\\':
+                pos++;
+                if (pos >= this->data.size()) goto end_of_loop;  // We found invalid syntax; just end the loop already.
+
+                cur_word.push_back(this->data[pos]);
+                break; // switch(this->data[pos])
+
+                default: // Check for specials (e.g. || && ;)
+                int specialtype = -1;
+                for (size_t i = 0; i < special_characters.size(); i++) {
+                    if (this->data.find(special_characters[i], pos) == pos) {
+                        specialtype = i;
+                        break; // for (size_t i = 0;...)
+                    }
+                }
+
+                if (specialtype == -1) cur_word.push_back(this->data[pos]);
+                else {
+                    if (!cur_word.empty()) {
+                        result.push_back(std::move(cur_word));
+                        cur_word.clear();
+                    }
+                    
+                    result.push_back(special_characters[specialtype]);
+                    pos += (special_characters[specialtype].size() - 1);
+                }
+                break; // switch(this->data[pos])
+            }
+            break; // switch (quote_mode)
+
+            case Q_DOUBLE:
+            switch (this->data[pos]) {
+                case '"':
+                quote_mode = Q_NONE;
+                break; // switch(this->data[pos]) 
+
+                case '\\':
+                pos++;
+                if (pos >= this->data.size()) goto end_of_loop;  // We found invalid syntax; just end the loop already.
+
+                default:
+                cur_word.push_back(this->data[pos]);
+                break; // switch(this->data[pos])
+            }
+            break; // switch (quote_mode)
+
+            case Q_SINGLE:
+            switch (this->data[pos]) {
+                case '\'':
+                quote_mode = Q_NONE;
+                break; // switch(this->data[pos]) 
+
+                case '\\':
+                pos++;
+                if (pos >= this->data.size()) goto end_of_loop;  // We found invalid syntax; just end the loop already.
+
+                default:
+                cur_word.push_back(this->data[pos]);
+                break; // switch(this->data[pos])
+            }
+            break; // switch (quote_mode)
+        }
+
+        end_of_loop:
+        ;
+    }
+    if (!cur_word.empty()) result.push_back(std::move(cur_word));
+
+    return std::move(result);
 }
