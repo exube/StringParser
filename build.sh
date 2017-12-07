@@ -3,9 +3,6 @@
 cd $(dirname $0)
 cd StringParser
 
-make clean
-make all
-
 cd ..
 
 if [ ! -d bin ]
