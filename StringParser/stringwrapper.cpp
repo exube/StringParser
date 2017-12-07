@@ -107,14 +107,13 @@ signed char parse_escape_sequence(char c) {
 
 std::vector<std::string> stringwrapper::split_by_whitespace(const std::vector<std::string> &special_characters) const {
     enum { Q_NONE, Q_DOUBLE, Q_SINGLE };
-    const char* specials = "\"'\\";
 
     std::vector<std::string> result;
     int quote_mode = Q_NONE;
     std::string cur_word;
 
     for (size_t pos = 0; pos < this->data.size(); pos++) {
-        // Special characters: "'\ 
+        // Special characters: \"' 
         switch (quote_mode) {
             case Q_NONE:  // We are not in any quotes; do not parse most escapes literally
             switch (this->data[pos]) {
